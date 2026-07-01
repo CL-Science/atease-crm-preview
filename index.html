@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>At Ease Property — CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
+<style>
+:root{
+  --bg:#eaf1ee; --ink:#0e1c18; --ink-soft:#5a6b65; --ink-faint:#92a09a;
+  --mint:#16c79a; --mint-deep:#0c9a76; --mint-soft:#9bf3d6;
+  --glass:rgba(255,255,255,.52); --glass-2:rgba(255,255,255,.68); --glass-3:rgba(255,255,255,.82);
+  --hair:rgba(255,255,255,.7); --hair-dk:rgba(16,40,32,.08);
+  --r:20px; --r-sm:12px;
+  --shadow:0 26px 50px -28px rgba(12,48,38,.45), 0 6px 16px -10px rgba(12,48,38,.2);
+  --sheen:inset 0 1px 0 rgba(255,255,255,.9), inset 0 0 0 1px rgba(255,255,255,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow:hidden;font-size:14px;-webkit-font-smoothing:antialiased}
+/* background light field the glass diffuses */
+#blobs{position:fixed;inset:-18%;z-index:0;filter:blur(72px) saturate(135%);transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.blob{position:absolute;border-radius:50%}
+.b1{width:54vw;height:54vw;left:-8vw;top:-12vw;background:radial-gradient(circle at 40% 40%,#3dffc0,transparent 64%);opacity:1}
+.b2{width:46vw;height:46vw;right:-8vw;top:2vw;background:radial-gradient(circle at 50% 50%,#46e3ff,transparent 66%);opacity:.92}
+.b3{width:58vw;height:58vw;left:16vw;bottom:-26vw;background:radial-gradient(circle at 50% 50%,#5bffbb,transparent 66%);opacity:.95}
+.b4{width:32vw;height:32vw;right:12vw;bottom:0;background:radial-gradient(circle at 50% 50%,#9affd9,transparent 68%);opacity:.9}
+.b5{width:36vw;height:36vw;left:32vw;top:30vh;background:radial-gradient(circle at 50% 50%,#7dffd6,transparent 70%);opacity:.7}
+#grain{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:.16;background-size:170px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.glass{background:var(--glass);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%);border:1px solid var(--hair);box-shadow:var(--shadow),var(--sheen);position:relative}
+@keyframes breathe{0%,100%{box-shadow:0 10px 22px -10px rgba(22,199,154,.75),0 0 16px rgba(43,240,182,.4),var(--sheen)}50%{box-shadow:0 12px 28px -8px rgba(22,199,154,.95),0 0 34px rgba(43,240,182,.7),var(--sheen)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 rgba(22,199,154,.0),var(--sheen)}50%{box-shadow:0 0 16px rgba(22,199,154,.7),var(--sheen)}}
+@keyframes dotpulse{0%,100%{box-shadow:0 0 6px #19c98a}50%{box-shadow:0 0 12px #19c98a,0 0 22px rgba(25,201,138,.65)}}
+.app{position:relative;z-index:2;display:grid;grid-template-columns:230px 1fr;height:100vh;padding:16px;gap:16px}
+/* ---------- sidebar ---------- */
+.side{border-radius:var(--r);padding:18px 14px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:11px;padding:6px 8px 18px}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#2bf0b6,#0c9a76);display:grid;place-items:center;color:#04261c;font-weight:600;box-shadow:0 8px 18px -8px rgba(22,199,154,.7),0 0 26px rgba(43,240,182,.6),var(--sheen)}
+.brand b{font-weight:600;font-size:15px;letter-spacing:-.01em}.brand span{display:block;font-size:11px;color:var(--ink-faint)}
+.nav{display:flex;flex-direction:column;gap:3px;margin-top:6px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;color:var(--ink-soft);text-decoration:none;font-weight:500;cursor:pointer;transition:.18s}
+.nav a i{font-size:19px;width:20px}
+.nav a:hover{background:rgba(255,255,255,.5);color:var(--ink)}
+.nav a.on{background:rgba(255,255,255,.78);color:var(--ink);box-shadow:var(--sheen),0 0 24px -3px rgba(22,199,154,.5);position:relative}
+.nav a.on::before{content:"";position:absolute;left:-14px;top:9px;bottom:9px;width:3px;border-radius:3px;background:linear-gradient(var(--mint),var(--mint-deep));box-shadow:0 0 12px var(--mint)}
+.nav .lbl{font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;padding:14px 12px 6px}
+.side .foot{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,.4)}
+.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(145deg,#bdeede,#5ccfae);display:grid;place-items:center;font-weight:600;font-size:12px;color:#08382a}
+/* ---------- main ---------- */
+.main{border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.top{display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--hair-dk)}
+.search{flex:1;max-width:420px;display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:11px;background:rgba(255,255,255,.55);border:1px solid var(--hair);color:var(--ink-faint);font-size:13px}
+.search kbd{margin-left:auto;font-size:10px;background:rgba(16,40,32,.07);padding:2px 6px;border-radius:5px;font-family:inherit}
+.top .sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:11px;border:1px solid var(--hair);background:rgba(255,255,255,.5);color:var(--ink);font:inherit;font-weight:500;font-size:13px;cursor:pointer;transition:.16s;box-shadow:var(--sheen)}
+.btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.7)}
+.btn.primary{background:linear-gradient(145deg,#23e6ad,#0fae84);color:#03241b;border-color:transparent;box-shadow:0 10px 24px -8px rgba(22,199,154,.85),0 0 30px rgba(43,240,182,.55),var(--sheen)}
+.btn.icon{padding:9px;width:38px;justify-content:center;color:var(--ink-soft)}
+.scroll{flex:1;overflow-y:auto;padding:22px 24px 40px}
+.scroll::-webkit-scrollbar{width:9px}.scroll::-webkit-scrollbar-thumb{background:rgba(16,40,32,.13);border-radius:9px;border:2px solid transparent;background-clip:content-box}
+.phead{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap}
+.phead h1{font-size:23px;font-weight:600;letter-spacing:-.02em}
+.phead p{color:var(--ink-faint);font-size:13px;margin-top:3px}
+.row{display:flex;gap:8px;align-items:center}
+/* cards */
+.panel{border-radius:var(--r);padding:18px}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.metric{border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.metric .k{font-size:12px;color:var(--ink-soft)}
+.metric .v{font-size:30px;font-weight:600;letter-spacing:-.02em;margin-top:4px}
+.metric .d{font-size:11px;color:var(--mint-deep);margin-top:2px;font-weight:500}
+.metric i{position:absolute;right:14px;top:14px;font-size:20px;color:var(--mint);opacity:.55}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px}
+.pill.mint{background:rgba(22,199,154,.16);color:var(--mint-deep);box-shadow:0 0 13px rgba(22,199,154,.28)}
+.pill.blue{background:rgba(60,140,221,.16);color:#1d5fa5}
+.pill.purple{background:rgba(127,119,221,.16);color:#534ab7}
+.pill.amber{background:rgba(186,117,23,.15);color:#8a5a0b}
+.pill.grey{background:rgba(16,40,32,.08);color:var(--ink-soft)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dot.hot{background:#19c98a;box-shadow:0 0 10px #19c98a,0 0 18px rgba(25,201,138,.5)}.dot.warm{background:#e8a33d}.dot.cold{background:#9aa8a2}
+/* action board */
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:start}
+.col{border-radius:var(--r);padding:14px;min-height:340px}
+.col h3{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;font-weight:600}
+.col h3 .n{background:rgba(255,255,255,.6);border-radius:20px;padding:1px 8px;font-size:11px;color:var(--ink-soft)}
+.tcard{background:rgba(255,255,255,.72);border:1px solid var(--hair);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;transition:.18s;box-shadow:0 8px 18px -14px rgba(12,48,38,.4),var(--sheen)}
+.tcard:hover{transform:translateY(-2px) scale(1.012);box-shadow:0 16px 30px -16px rgba(12,48,38,.45),var(--sheen)}
+.tcard .nm{font-weight:600;font-size:13px;display:flex;align-items:center;gap:7px}
+.tcard .act{font-size:12.5px;color:var(--ink);margin:7px 0 9px;line-height:1.45}
+.tcard .meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ink-faint)}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.assignee{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-soft)}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft)}
+.sw{width:36px;height:21px;border-radius:20px;background:linear-gradient(145deg,#23e6ad,#0fae84);position:relative;box-shadow:var(--sheen),0 0 14px rgba(22,199,154,.6)}
+.sw::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2.5px;right:2.5px;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+/* listings grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:16px}
+.lcard{border-radius:var(--r);overflow:hidden;cursor:pointer;transition:.2s}
+.lcard:hover{transform:translateY(-3px);box-shadow:0 30px 50px -26px rgba(12,48,38,.5),var(--sheen)}
+.lcard .ph{height:120px;background:linear-gradient(135deg,#cfeee3,#aee0cf);display:grid;place-items:center;color:#6fae98;position:relative}
+.lcard .ph i{font-size:30px}
+.lbody{padding:13px 15px}
+.lbody .pr{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.lbody .ad{font-weight:600;font-size:14px}.lbody .su{font-size:12px;color:var(--ink-faint);margin-bottom:9px}
+.specs{display:flex;gap:12px;font-size:12px;color:var(--ink-soft)}
+.specs span{display:inline-flex;align-items:center;gap:4px}
+/* table / list */
+.list{border-radius:var(--r);overflow:hidden}
+.lrow{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--hair-dk);cursor:pointer;transition:.14s}
+.lrow:last-child{border-bottom:none}.lrow:hover{background:rgba(255,255,255,.5)}
+.lrow .nm{font-weight:600;font-size:13.5px;min-width:130px}
+.lrow .br{flex:1;color:var(--ink-soft);font-size:12.5px}
+.lrow .tm{color:var(--ink-faint);font-size:11.5px}
+.tabs{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:11px;font-size:12.5px;font-weight:500;color:var(--ink-soft);cursor:pointer;background:rgba(255,255,255,.4);border:1px solid transparent;transition:.15s}
+.tab:hover{background:rgba(255,255,255,.6)}
+.tab.on{background:rgba(255,255,255,.85);color:var(--ink);box-shadow:var(--sheen)}
+.tab .c{opacity:.55;margin-left:5px;font-size:11px}
+/* drawer */
+#scrim{position:fixed;inset:0;z-index:30;background:rgba(14,40,32,.18);backdrop-filter:blur(2px);opacity:0;pointer-events:none;transition:.25s}
+#scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:16px;right:16px;bottom:16px;width:420px;max-width:92vw;z-index:31;border-radius:var(--r);transform:translateX(calc(100% + 28px));transition:transform .34s cubic-bezier(.2,.85,.25,1);display:flex;flex-direction:column;overflow:hidden}
+.drawer.open{transform:none}
+.dhead{padding:18px 20px;border-bottom:1px solid var(--hair-dk);display:flex;align-items:flex-start;gap:12px}
+.dbody{flex:1;overflow-y:auto;padding:18px 20px}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.fact{background:rgba(255,255,255,.5);border-radius:12px;padding:10px 12px}
+.fact .k{font-size:11px;color:var(--ink-faint)}.fact .v{font-weight:600;font-size:14px;margin-top:2px}
+.sec{border-top:1px solid var(--hair-dk);padding:14px 0;font-size:13px;color:var(--ink-soft);line-height:1.6}
+.sec h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:8px}
+.dfoot{padding:14px 20px;border-top:1px solid var(--hair-dk)}
+.locked{filter:blur(5px);user-select:none}
+.muted{color:var(--ink-faint)}
+.hide{display:none!important}
+@media(max-width:880px){.app{grid-template-columns:1fr}.side{display:none}.metrics,.board{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div id="blobs"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div><div class="blob b5"></div></div>
+<div id="grain"></div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="side glass">
+    <div class="brand"><div class="logo"><i class="ti ti-building-community"></i></div><div><b>At Ease</b><span>Property CRM</span></div></div>
+    <nav class="nav" id="nav">
+      <a data-v="home" class="on"><i class="ti ti-layout-grid"></i> Dashboard</a>
+      <a data-v="listings"><i class="ti ti-home"></i> Listings</a>
+      <a data-v="people"><i class="ti ti-users"></i> People</a>
+      <a data-v="appraisals"><i class="ti ti-clipboard-check"></i> Appraisals</a>
+      <a data-v="calls"><i class="ti ti-phone"></i> Calls</a>
+      <div class="lbl">Setup</div>
+      <a data-v="settings"><i class="ti ti-settings"></i> Settings</a>
+    </nav>
+    <div class="foot"><div class="av">HZ</div><div style="font-size:12px"><b style="font-weight:600">Harry Zhang</b><div class="muted" style="font-size:11px">At Ease Property</div></div><i class="ti ti-chevron-down muted" style="margin-left:auto"></i></div>
+  </aside>
+
+  <!-- MAIN -->
+  <section class="main glass">
+    <div class="top">
+      <div class="search"><i class="ti ti-search"></i> Search signals, listings, people… <kbd>⌘K</kbd></div>
+      <div class="sp"></div>
+      <button class="btn primary" onclick="openAdd()"><i class="ti ti-plus"></i> Add listing</button>
+      <button class="btn icon" title="Quick add"><i class="ti ti-plus"></i></button>
+      <button class="btn icon" title="Notifications"><i class="ti ti-bell"></i></button>
+    </div>
+    <div class="scroll" id="view"></div>
+  </section>
+</div>
+
+<!-- DRAWER -->
+<div id="scrim" onclick="closeDrawer()"></div>
+<aside class="drawer glass" id="drawer"></aside>
+
+<script>
+const DATA={
+ listings:[
+  {a:"42 Stockdale Avenue",s:"Clayton",t:"House",b:4,ba:2,c:2,mode:"rent",price:"$550/wk",st:"Listed"},
+  {a:"3/15 Arnott Street",s:"Clayton",t:"Unit",b:2,ba:1,c:1,mode:"rent",price:"$430/wk",st:"Listed"},
+  {a:"8 Wellington Road",s:"Clayton",t:"Townhouse",b:3,ba:2,c:1,mode:"rent",price:"$620/wk",st:"Listed"},
+  {a:"14 Carrington Road",s:"Box Hill",t:"House",b:4,ba:2,c:2,mode:"sale",price:"Contact agent",st:"Listed"},
+  {a:"27 Station Street",s:"Box Hill",t:"Apartment",b:2,ba:2,c:1,mode:"sale",price:"Contact agent",st:"Under offer"},
+  {a:"5 Court Street",s:"Box Hill",t:"House",b:5,ba:3,c:2,mode:"sale",price:"Contact agent",st:"Listed"}
+ ],
+ people:[
+  {n:"David Nguyen",ty:"Buyer",tc:"blue",br:"Box Hill · house · up to $700k · school zone",w:"hot",last:"2h ago"},
+  {n:"Mei Lin",ty:"Renter",tc:"mint",br:"Clayton · 2-bed · $450/wk · move-in Aug",w:"warm",last:"5h ago"},
+  {n:"Tom Edwards",ty:"Seller",tc:"purple",br:"14 Carrington Rd · appraisal Thu 10am",w:"hot",last:"1d ago"},
+  {n:"Priya Shah",ty:"Investor",tc:"amber",br:"Yield-focused · ~$1.2m · SMSF",w:"warm",last:"2d ago"},
+  {n:"James Park",ty:"Landlord",tc:"purple",br:"8 Wellington Rd · full management",w:"warm",last:"3d ago"},
+  {n:"Sarah Cohen",ty:"Renter",tc:"mint",br:"Clayton · 3-bed · $600/wk",w:"cold",last:"4d ago"}
+ ],
+ appr:{Requested:[{a:"12 Arnott Street, Clayton",k:"Rental",o:"Mei Lin",t:"1–3 mo"}],
+  Booked:[{a:"14 Carrington Road, Box Hill",k:"Sale",o:"Tom Edwards",t:"Thu 2 Jul, 10am · Alex"}],
+  Completed:[{a:"5 Court Street, Box Hill",k:"Sale",o:"R. Patel",t:"Quoted $1.9–2.1m"}],
+  Won:[{a:"88 Elgar Road, Box Hill",k:"Sale",o:"L. Romano",t:"→ Listed"}]},
+ calls:[
+  {n:"David Nguyen",ty:"Buy",tc:"blue",sum:"4-bed Box Hill, school zone — booked inspection Sat",out:"Qualified",w:"hot",d:"4:12"},
+  {n:"Tom Edwards",ty:"Sell",tc:"purple",sum:"Wants to sell 14 Carrington — appraisal booked",out:"Qualified",w:"hot",d:"6:09"},
+  {n:"Mei Lin",ty:"Rent",tc:"mint",br:"",sum:"2-bed Clayton ~$450/wk — sent listings",out:"Nurture",w:"warm",d:"3:48"},
+  {n:"Unknown",ty:"Spam",tc:"grey",sum:"Google Business listing pitch",out:"Spam",w:"cold",d:"0:31"}
+ ],
+ board:{
+  "Signal":[{n:"David Nguyen",a:"Hot buyer — in range for a Box Hill house",tags:[["Hot","mint"],["Opportunity","blue"]],who:"🎙 Aria",t:"just now"}],
+  "Task":[{n:"Mei Lin",a:"Text Mei 2 listings around $450/wk in Clayton",tags:[["Nurture","mint"],["⚡ Auto","grey"]],who:"🎙 Aria",t:"advances in 14s"}],
+  "Executing":[{n:"Tom Edwards",a:"Call to confirm Saturday appraisal",tags:[["Booking","purple"]],who:"👤 Alex",t:"on call"}],
+  "Outcome":[{n:"L. Romano",a:"Appraisal won → 88 Elgar Rd now listed",tags:[["Won","mint"]],who:"👤 Alex",t:"2:05pm"}]
+ }
+};
+const ICON={Buyer:"ti-user-search",Renter:"ti-key",Seller:"ti-home-dollar",Investor:"ti-trending-up",Landlord:"ti-building"};
+const $=s=>document.querySelector(s);
+function spec(n,i){return `<span><i class="ti ${i}"></i>${n}</span>`}
+
+function viewHome(){
+ const b=DATA.board;
+ const col=(name,arr)=>`<div class="col glass"><h3>${name}<span class="n">${arr.length}</span></h3>${arr.map(c=>`
+   <div class="tcard" onclick="openPerson('${c.n}')"><div class="nm">${c.n}</div>
+   <div class="act">${c.a}</div>
+   <div class="tags">${c.tags.map(t=>`<span class="pill ${t[1]}">${t[0]}</span>`).join("")}</div>
+   <div class="meta" style="margin-top:9px"><span class="assignee">${c.who}</span><span style="margin-left:auto">${c.t}</span></div></div>`).join("")}</div>`;
+ return `<div class="phead"><div><h1>Good morning, Harry</h1><p>Here's what At Ease needs from you today.</p></div>
+   <div class="toggle">Auto-mode <span class="sw"></span></div></div>
+ <div class="metrics">
+   ${metric("Listings","12","ti-home","+2 this week")}
+   ${metric("Active leads","34","ti-users","+6 this week")}
+   ${metric("Appraisals","4","ti-clipboard-check","2 booked")}
+   ${metric("Calls · 7d","28","ti-phone","9 qualified")}
+ </div>
+ <div class="phead" style="margin:6px 0 14px"><div><h1 style="font-size:17px">Action board</h1><p>Aria turns every call into a next step. Approve, or let auto-mode run.</p></div></div>
+ <div class="board">${col("Signal",b.Signal)}${col("Task",b.Task)}${col("Executing",b.Executing)}${col("Outcome",b.Outcome)}</div>`;
+}
+function metric(k,v,i,d){return `<div class="metric glass"><i class="ti ${i}"></i><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`}
+
+function viewListings(){
+ return `<div class="phead"><div><h1>Listings</h1><p>${DATA.listings.length} properties · sale prices stay private</p></div>
+   <div class="row"><button class="btn"><i class="ti ti-filter"></i> Filter</button><button class="btn"><i class="ti ti-arrows-sort"></i> Sort</button><button class="btn primary" onclick="openAdd()"><i class="ti ti-plus"></i> Add listing</button></div></div>
+ <div class="grid">${DATA.listings.map((l,idx)=>{const rent=l.mode==="rent";return `
+   <div class="lcard glass" onclick="openListing(${idx})"><div class="ph"><i class="ti ti-photo"></i>
+     <span class="pill ${rent?'mint':'blue'}" style="position:absolute;top:10px;left:10px">${rent?'For rent':'For sale'}</span></div>
+   <div class="lbody"><div class="pr"><span class="pill ${l.st==='Under offer'?'amber':'grey'}">${l.st}</span>
+     <b style="font-size:13px;color:${rent?'var(--ink)':'var(--ink-faint)'}">${l.price}</b></div>
+   <div class="ad">${l.a}</div><div class="su">${l.s} · ${l.t}</div>
+   <div class="specs">${spec(l.b,"ti-bed")}${spec(l.ba,"ti-bath")}${spec(l.c,"ti-car")}</div></div></div>`}).join("")}</div>`;
+}
+function viewPeople(){
+ const tabs=["All","Buyers","Renters","Sellers","Landlords","Investors"];
+ return `<div class="phead"><div><h1>People</h1><p>Every lead Aria captured — across all funnels</p></div>
+   <button class="btn primary"><i class="ti ti-user-plus"></i> Add contact</button></div>
+ <div class="tabs">${tabs.map((t,i)=>`<div class="tab ${i==0?'on':''}">${t}<span class="c">${i==0?DATA.people.length:''}</span></div>`).join("")}</div>
+ <div class="list glass">${DATA.people.map(p=>`<div class="lrow" onclick="openPerson('${p.n}')">
+   <div class="av">${p.n.split(' ').map(x=>x[0]).join('')}</div>
+   <div class="nm">${p.n}</div><span class="pill ${p.tc}"><i class="ti ${ICON[p.ty]}" style="font-size:13px"></i>${p.ty}</span>
+   <div class="br">${p.br}</div>
+   <span class="assignee"><span class="dot ${p.w}"></span>${p.w}</span><div class="tm">${p.last}</div>
+   <i class="ti ti-dots muted"></i></div>`).join("")}</div>`;
+}
+function viewAppr(){
+ const a=DATA.appr;const cols=["Requested","Booked","Completed","Won"];
+ return `<div class="phead"><div><h1>Appraisals</h1><p>Seller & landlord pipeline — request → won listing</p></div>
+   <button class="btn primary"><i class="ti ti-plus"></i> Log appraisal</button></div>
+ <div class="board">${cols.map(c=>`<div class="col glass"><h3>${c}<span class="n">${a[c].length}</span></h3>
+   ${a[c].map(x=>`<div class="tcard" onclick="openAppr('${x.a.replace(/'/g,'')}')"><div class="nm">${x.a}</div>
+   <div class="tags"><span class="pill ${x.k==='Sale'?'blue':'mint'}">${x.k}</span></div>
+   <div class="act" style="margin:8px 0 4px">${x.o}</div>
+   <div class="meta">${x.t}</div></div>`).join("")}</div>`).join("")}</div>`;
+}
+function viewCalls(){
+ return `<div class="phead"><div><h1>Calls</h1><p>Aria's inbound log — who, what, next</p></div>
+   <div class="row"><button class="btn"><i class="ti ti-filter"></i> Filter</button></div></div>
+ <div class="list glass">${DATA.calls.map(c=>`<div class="lrow" onclick="openPerson('${c.n}')">
+   <i class="ti ti-phone-incoming" style="color:var(--mint);font-size:18px"></i>
+   <div class="nm">${c.n}</div><span class="pill ${c.tc}">${c.ty}</span>
+   <div class="br">${c.sum}</div>
+   <span class="pill ${c.out==='Qualified'?'mint':c.out==='Spam'?'grey':'amber'}">${c.out}</span>
+   <span class="assignee"><span class="dot ${c.w}"></span></span><div class="tm">${c.d}</div></div>`).join("")}</div>`;
+}
+function viewSettings(){
+ const ig=[["Airtable","ti-database","ok"],["n8n","ti-share","ok"],["VAPI · Aria","ti-microphone","ok"],["Cal.com","ti-calendar","ok"],["Email / SMS","ti-mail","soon"]];
+ return `<div class="phead"><div><h1>Settings</h1><p>Agency, agents & integrations</p></div></div>
+ <div class="metrics" style="grid-template-columns:1fr 1fr">
+  <div class="panel glass"><h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:12px">Integrations</h4>
+  ${ig.map(x=>`<div class="row" style="justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--hair-dk)"><span class="row"><i class="ti ${x[1]}" style="font-size:18px;color:var(--mint)"></i> ${x[0]}</span><span class="pill ${x[2]==='ok'?'mint':'grey'}">${x[2]==='ok'?'Connected':'Coming soon'}</span></div>`).join("")}</div>
+  <div class="panel glass"><h4 style="font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:12px">Aria — voice agent</h4>
+  <div class="sec" style="border:none;padding-top:0">Handles inbound calls in English & Mandarin, qualifies buyers/sellers/renters, checks budget fit, answers area questions, and books appraisals on Cal.com.</div>
+  <div class="row" style="margin-top:8px"><span class="pill mint">● Live</span><span class="muted" style="font-size:12px">Price confidentiality on</span></div></div>
+ </div>`;
+}
+
+const VIEWS={home:viewHome,listings:viewListings,people:viewPeople,appraisals:viewAppr,calls:viewCalls,settings:viewSettings};
+function go(v){$("#view").innerHTML=VIEWS[v]();$("#view").scrollTop=0;document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===v))}
+document.querySelectorAll("#nav a").forEach(a=>a.onclick=()=>go(a.dataset.v));
+
+/* drawer */
+function drawer(html){$("#drawer").innerHTML=html;$("#drawer").classList.add("open");$("#scrim").classList.add("open")}
+function closeDrawer(){$("#drawer").classList.remove("open");$("#scrim").classList.remove("open")}
+function dh(title,sub,close=1){return `<div class="dhead"><div style="flex:1"><div style="font-size:17px;font-weight:600">${title}</div><div class="muted" style="font-size:12px;margin-top:2px">${sub}</div></div><button class="btn icon" onclick="closeDrawer()"><i class="ti ti-x"></i></button></div>`}
+function openListing(i){const l=DATA.listings[i];const rent=l.mode==="rent";
+ drawer(dh(l.a,`${l.s} · ${l.t}`)+`<div class="dbody">
+  <div style="height:140px;border-radius:14px;background:linear-gradient(135deg,#cfeee3,#aee0cf);display:grid;place-items:center;color:#6fae98"><i class="ti ti-photo" style="font-size:34px"></i></div>
+  <div class="facts">${fact("Type",l.t)}${fact("Status",l.st)}${fact("Bedrooms",l.b)}${fact("Bathrooms",l.ba)}${fact("Car",l.c)}${fact(rent?"Rent":"Price",rent?l.price:'<span class="locked">$1,480,000</span>')}</div>
+  ${!rent?'<div class="sec"><h4>Price confidentiality</h4>Asking & reserve are hidden from buyers — Aria never discloses them.</div>':''}
+  <div class="sec"><h4>Who's watching this</h4>${rent?'Mei Lin, Sarah Cohen':'David Nguyen'} <span class="muted">· linked buyers</span></div>
+  <div class="sec"><h4>Section 32</h4><span class="muted">Council rates, land tax, OC fees — attach document</span></div></div>
+  <div class="dfoot row"><button class="btn primary" style="flex:1"><i class="ti ti-edit"></i> Edit</button><button class="btn"><i class="ti ti-external-link"></i></button></div>`);
+}
+function fact(k,v){return `<div class="fact"><div class="k">${k}</div><div class="v">${v}</div></div>`}
+function openPerson(name){const p=DATA.people.find(x=>x.n===name)||{n:name,ty:"Lead",tc:"grey",br:"—",w:"warm"};
+ drawer(dh(`<span class="row" style="gap:10px"><span class="av">${p.n.split(' ').map(x=>x[0]).join('')}</span>${p.n}</span>`,`<span class="pill ${p.tc}">${p.ty}</span>`)+`<div class="dbody">
+  <div class="row" style="gap:7px;margin-bottom:6px"><span class="dot ${p.w}"></span><b style="text-transform:capitalize">${p.w} lead</b></div>
+  <div class="sec"><h4>Brief</h4>${p.br}</div>
+  <div class="sec"><h4>Call history</h4>1 call with Aria · qualified · ${p.last||'recently'}<br><span class="muted">"${p.br}"</span></div>
+  <div class="sec"><h4>Nurture</h4>Auto text/email alerts for matching listings <span class="pill mint">on</span></div></div>
+  <div class="dfoot row"><button class="btn primary" style="flex:1"><i class="ti ti-phone"></i> Call</button><button class="btn"><i class="ti ti-mail"></i></button><button class="btn"><i class="ti ti-calendar"></i></button></div>`);
+}
+function openAppr(a){drawer(dh(a,"Sale appraisal · Tom Edwards")+`<div class="dbody">
+  <div class="facts">${fact("Type","House · 4/2/2")}${fact("Timeline","1–3 months")}${fact("Owner price hope",'<span class="locked">$1,650,000</span>')}${fact("Agent band",'<span class="locked">$1.58–1.72m</span>')}</div>
+  <div class="sec"><h4>Confidential</h4>Owner's price expectation & the agent band are internal — never read to buyers.</div>
+  <div class="sec"><h4>Stage</h4>Booked · Thu 2 Jul 10am · Alex Rivers</div></div>
+  <div class="dfoot row"><button class="btn primary" style="flex:1"><i class="ti ti-arrow-right"></i> Convert to listing</button></div>`);}
+function openAdd(){drawer(dh("Add listings","Paste realestate.com.au links")+`<div class="dbody">
+  <textarea placeholder="https://www.realestate.com.au/property-...\nhttps://www.realestate.com.au/property-..." style="width:100%;min-height:120px;border-radius:12px;border:1px solid var(--hair);background:rgba(255,255,255,.6);padding:12px;font:inherit;font-size:13px;resize:vertical"></textarea>
+  <div class="muted" style="font-size:12px;margin-top:8px">We scrape each link and file it with photos automatically.</div></div>
+  <div class="dfoot"><button class="btn primary" style="width:100%"><i class="ti ti-plus"></i> Add to database</button></div>`);}
+
+/* light parallax — glass diffuses the moving light */
+document.addEventListener("mousemove",e=>{const x=(e.clientX/innerWidth-.5),y=(e.clientY/innerHeight-.5);
+ $("#blobs").style.transform=`translate(${x*-26}px,${y*-26}px)`});
+go("home");
+</script>
+</body>
+</html>
